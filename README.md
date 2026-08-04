@@ -28,16 +28,13 @@ Supported mnemonic sizes:
 - 128 bits of entropy → 12 words
 - 256 bits of entropy → 24 words
 
-## Included Tools
+## Public OpenPGP Key
 
-The repository contains two independent HTML files.
+The public OpenPGP certificate used to verify this project's digital signatures is available at:
 
-### Coin Entropy Generator
+https://keys.openpgp.org/vks/v1/by-fingerprint/BD018CDD76ECD82A7D0CF1743915E5B9EFAF157E
 
-This version accepts results obtained from repeated coin flips.
-
-Each result represents one binary bit:
+Fingerprint:
 
 ```text
-Heads → 1
-Tails → 0
+BD01 8CDD 76EC D82A 7D0C F174 3915 E5B9 EFAF 157E
