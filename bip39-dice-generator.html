@@ -207,6 +207,17 @@
             font-weight: 700;
         }
 
+        .credits {
+            margin: 26px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .credits a {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
         p {
             margin: 18px 0 8px;
         }
@@ -373,6 +384,10 @@
                     <textarea id="checksumWord" readonly placeholder="The last BIP-39 word will appear here"></textarea>
                 </div>
             </div>
+            <p class="credits">
+                <span data-i18n="credits">Source and credits:</span>
+                <a href="https://github.com/eduardohem/manual-entropy-bip39.git" target="_blank" rel="noopener noreferrer">eduardohem/manual-entropy-bip39</a>
+            </p>
         </div>
     </div>
 		
@@ -588,6 +603,7 @@ const BIP39_ENGLISH_WORDS = [
             en: {
                 pageTitle: "Offline BIP-39 Seed Calculator Using Dice",
                 clear: "Clear data", heading: "BIP-39 Seed Generator Using Dice",
+                credits: "Source and credits:",
                 securityWarning: "⚠ For real use, run this generator offline.",
                 instructions: "Roll a die: 1 = 00, 2 = 01, 3 = 10 and 4 = 11. Discard results 5 and 6.",
                 diceResults: "Dice results:", paste: "Paste", calculate: "Calculate Seed",
@@ -608,6 +624,7 @@ const BIP39_ENGLISH_WORDS = [
             es: {
                 pageTitle: "Calculadora de Seed BIP-39 con Dados sin Conexión",
                 clear: "Borrar datos", heading: "Generador de Seed BIP-39 con Dados",
+                credits: "Código fuente y créditos:",
                 securityWarning: "⚠ Para un uso real, ejecuta este generador sin conexión.",
                 instructions: "Lanza un dado: 1 = 00, 2 = 01, 3 = 10 y 4 = 11. Descarta los resultados 5 y 6.",
                 diceResults: "Resultados del dado:", paste: "Pegar", calculate: "Calcular Seed",
@@ -628,6 +645,7 @@ const BIP39_ENGLISH_WORDS = [
             pt: {
                 pageTitle: "Calculadora de Seed BIP-39 com Dados Offline",
                 clear: "Limpar dados", heading: "Gerador de Seed BIP-39 por Dados",
+                credits: "Código-fonte e créditos:",
                 securityWarning: "⚠ Para uso real, execute este gerador offline.",
                 instructions: "Jogue um dado: 1 = 00, 2 = 01, 3 = 10 e 4 = 11. Resultados 5 e 6 devem ser descartados.",
                 diceResults: "Resultados do dado:", paste: "Colar", calculate: "Calcular Seed",

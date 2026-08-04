@@ -207,6 +207,17 @@
             font-weight: 700;
         }
 
+        .credits {
+            margin: 26px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .credits a {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
         p {
             margin: 18px 0 8px;
         }
@@ -368,6 +379,10 @@
                     <textarea id="checksumWord" readonly placeholder="The last BIP-39 word will appear here"></textarea>
                 </div>
             </div>
+            <p class="credits">
+                <span data-i18n="credits">Source and credits:</span>
+                <a href="https://github.com/eduardohem/manual-entropy-bip39.git" target="_blank" rel="noopener noreferrer">eduardohem/manual-entropy-bip39</a>
+            </p>
         </div>
     </div>
 		
@@ -583,6 +598,7 @@ const BIP39_ENGLISH_WORDS = [
             en: {
                 pageTitle: "Offline BIP-39 Seed Calculator Using Coin Flips",
                 clear: "Clear data", heading: "BIP-39 Seed Generator Using Coin Flips",
+                credits: "Source and credits:",
                 securityWarning: "⚠ For real use, run this generator offline.",
                 instructions: "Each bit represents a coin flip: heads = 1 and tails = 0.",
                 binaryLabel: "Binary:", paste: "Paste", calculate: "Calculate Seed",
@@ -601,6 +617,7 @@ const BIP39_ENGLISH_WORDS = [
             es: {
                 pageTitle: "Calculadora de Seed BIP-39 con Monedas sin Conexión",
                 clear: "Borrar datos", heading: "Generador de Seed BIP-39 con Lanzamientos de Moneda",
+                credits: "Código fuente y créditos:",
                 securityWarning: "⚠ Para un uso real, ejecuta este generador sin conexión.",
                 instructions: "Cada bit corresponde a un lanzamiento: cara = 1 y cruz = 0.",
                 binaryLabel: "Binario:", paste: "Pegar", calculate: "Calcular Seed",
@@ -619,6 +636,7 @@ const BIP39_ENGLISH_WORDS = [
             pt: {
                 pageTitle: "Calculadora de Seed BIP-39 com Moedas Offline",
                 clear: "Limpar dados", heading: "Gerador de Seed BIP-39 por Lançamentos de Moeda",
+                credits: "Código-fonte e créditos:",
                 securityWarning: "⚠ Para uso real, execute este gerador offline.",
                 instructions: "Cada bit corresponde a cara ou coroa: cara = 1 e coroa = 0.",
                 binaryLabel: "Binário:", paste: "Colar", calculate: "Calcular Seed",
