@@ -1,0 +1,886 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Calculadora de Seed BIP-39 com Dados Offline</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+			background: #333333;
+			color: #ffffff;
+			link-color: #ffffff;
+		
+        }
+
+        .top-controls {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .language-select {
+            padding: 10px 12px;
+            color: #46515d;
+            background: var(--accent-dark);
+            border: 1px solid #cbd2d9;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        h1 {
+            text-align: center;
+			color: #ffffff;
+        }
+		
+		h2 {
+			text-align: center;
+			font-size: 22px;
+			font-color: #ffffff;
+		}
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            height: auto;
+            padding: 60px 20px 40px;
+            box-sizing: border-box;
+        }
+
+        .tool {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #000;
+            border-radius: 8px;
+            width: 60%;
+            text-align: center;
+			background: #282828;
+        }
+
+        @media (max-width: 700px) {
+            .tool {
+                width: 100%;
+            }
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            resize: vertical;
+        }
+
+        .field-row {
+            display: flex;
+            align-items: stretch;
+            gap: 10px;
+        }
+
+        .field-row textarea {
+            margin-bottom: 10px;
+        }
+
+        .field-row button {
+            margin-bottom: 10px;
+            min-width: 80px;
+        }
+
+        .bit-counter {
+            display: inline-block;
+            margin-left: 10px;
+            color: #F6911D;
+            font-weight: bold;
+        }
+
+        .result-pair {
+            display: flex;
+            gap: 20px;
+        }
+
+        .result-pair > div {
+            flex: 1;
+            min-width: 0;
+        }
+
+        @media (max-width: 700px) {
+            .result-pair {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+
+        button {
+            background-color: #ff5a00;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #F6911D;
+        }
+		
+		a:link {
+           color: orange;
+           text-decoration: none;
+         }
+
+        a:visited {
+           color: orange;
+           text-decoration: none;
+         }
+
+        a:hover {
+			color: yellow;
+			text-decoration: none;
+         }
+
+		a:active {
+			color: yellow;
+			text-decoration: underline;
+		 }
+
+        /* Identidade visual da Calculadora de Seed */
+        :root {
+            color-scheme: light;
+            --page-start: #f1f3f5;
+            --page-end: #e7eaee;
+            --panel: #ffffff;
+            --panel-border: #d7dce2;
+            --field: #f8f9fa;
+            --field-border: #c9d0d8;
+            --text: #20262d;
+            --muted: #59636f;
+            --accent: #52677d;
+            --accent-hover: #43586d;
+            --accent-dark: #eef1f4;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--text);
+            background: linear-gradient(145deg, var(--page-start), var(--page-end));
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        .tool {
+            padding: 30px;
+            color: var(--text);
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 14px;
+            box-shadow: 0 14px 38px rgba(28, 37, 46, 0.10);
+        }
+
+        h2 {
+            margin: 4px 0 28px;
+            color: var(--text);
+            font-size: 26px;
+            font-weight: 650;
+            letter-spacing: 0.2px;
+        }
+
+        .coin-note {
+            margin: -18px 0 28px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .security-warning {
+            margin: -12px 0 24px;
+            padding: 12px 14px;
+            color: #704d00;
+            background: #fff4d6;
+            border: 1px solid #e5c46d;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        p {
+            margin: 18px 0 8px;
+        }
+
+        label {
+            color: var(--muted);
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        textarea {
+            min-height: 68px;
+            padding: 14px 16px;
+            color: var(--text);
+            background: var(--field);
+            border: 1px solid var(--field-border);
+            border-radius: 10px;
+            outline: none;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 15px;
+            line-height: 1.5;
+            transition: border-color 160ms ease, box-shadow 160ms ease;
+        }
+
+        textarea::placeholder {
+            color: #9099a3;
+        }
+
+        textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(82, 103, 125, 0.12);
+        }
+
+        textarea[readonly] {
+            background: #f2f4f6;
+        }
+
+        #wordsResult {
+            background: #dce9df;
+            border-color: #9fb9a6;
+            color: #244a32;
+        }
+
+        #checksumWord {
+            background: #dce9df;
+            border-color: #9fb9a6;
+            color: #244a32;
+            font-weight: 700;
+        }
+
+        button {
+            padding: 11px 18px;
+            color: #ffffff;
+            background: var(--accent);
+            border: 1px solid var(--accent);
+            border-radius: 9px;
+            box-shadow: 0 4px 10px rgba(52, 65, 78, 0.14);
+            font-size: 14px;
+            font-weight: 700;
+            transition: transform 150ms ease, background 150ms ease, box-shadow 150ms ease;
+        }
+
+        button:hover {
+            color: #ffffff;
+            background: var(--accent-hover);
+            box-shadow: 0 6px 14px rgba(52, 65, 78, 0.18);
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .top-controls button {
+            color: #46515d;
+            background: var(--accent-dark);
+            border-color: #cbd2d9;
+            box-shadow: none;
+        }
+
+        .top-controls button:hover {
+            color: #27313a;
+            background: #e1e5e9;
+        }
+
+        .bit-counter {
+            color: var(--accent);
+        }
+
+        @media (max-width: 700px) {
+            .container {
+                padding: 30px 12px;
+            }
+
+            .tool {
+                margin: 0;
+                padding: 18px;
+                border-radius: 14px;
+            }
+
+            .field-row {
+                gap: 7px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="tool">
+            <div class="top-controls">
+                <select id="languageSelect" class="language-select" onchange="setLanguage(this.value)" aria-label="Language">
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                    <option value="pt">Português</option>
+                </select>
+                <button id="wordConfig" onclick="toggleWordConfig()">12 words</button>
+                <button data-i18n="clear" onclick="clearPageData()">Clear data</button>
+            </div>
+            <h2 data-i18n="heading">BIP-39 Seed Generator Using Dice</h2>
+            <p class="security-warning" data-i18n="securityWarning">⚠ For real use, run this generator offline.</p>
+            <p class="coin-note" data-i18n="instructions">Roll a die: 1 = 00, 2 = 01, 3 = 10 and 4 = 11. Discard results 5 and 6.</p>
+            <p>
+                <label for="binaryInput" data-i18n="diceResults">Dice results:</label>
+                <span id="bitCounter" class="bit-counter">64 die rolls remaining</span>
+            </p>
+            <div class="field-row">
+                <textarea id="binaryInput" placeholder="Enter 64 results (1, 2, 3 or 4)" oninput="sanitizeBinaryInput(this)"></textarea>
+                <button data-i18n="paste" onclick="pasteBinary(this)">Paste</button>
+            </div>
+            <p><button data-i18n="calculate" onclick="calculateFromBinary()">Calculate Seed</button></p>
+            <p><label for="generatedBits" data-i18n="generatedBitsLabel">Generated bits:</label></p>
+            <div class="field-row">
+                <textarea id="generatedBits" readonly placeholder="The 128 generated bits will appear here"></textarea>
+                <button data-i18n="copy" onclick="copyField('generatedBits', this)">Copy</button>
+            </div>
+            <p><label for="hexResult" data-i18n="hexLabel">Hexadecimal:</label></p>
+            <div class="field-row">
+                <textarea id="hexResult" readonly placeholder="The hexadecimal value will appear here"></textarea>
+                <button data-i18n="copy" onclick="copyField('hexResult', this)">Copy</button>
+            </div>
+            <p><label for="hashResult" data-i18n="shaLabel">SHA-256:</label></p>
+            <div class="field-row">
+                <textarea id="hashResult" readonly placeholder="The SHA-256 hash will appear here"></textarea>
+                <button data-i18n="copy" onclick="copyField('hashResult', this)">Copy</button>
+            </div>
+            <p><label id="wordsLabel" for="wordsResult">First 11 words:</label></p>
+            <div class="field-row">
+                <textarea id="wordsResult" readonly placeholder="The BIP-39 words will appear here"></textarea>
+                <button id="wordsCopyButton" onclick="copyCompleteWords(this)">Copy 12 words</button>
+            </div>
+            <div class="result-pair">
+                <div>
+                    <p><label for="remainingBits" data-i18n="remainingLabel">Remaining entropy bits:</label></p>
+                    <textarea id="remainingBits" readonly placeholder="The remaining bits will appear here"></textarea>
+                </div>
+                <div>
+                    <p><label for="checksumResult" data-i18n="checksumLabel">Checksum bits (SHA-256):</label></p>
+                    <textarea id="checksumResult" readonly placeholder="The binary checksum will appear here"></textarea>
+                </div>
+                <div>
+                    <p><label for="checksumWord" data-i18n="lastWordLabel">Last word:</label></p>
+                    <textarea id="checksumWord" readonly placeholder="The last BIP-39 word will appear here"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+		
+    <script>
+const BIP39_ENGLISH_WORDS = [
+"abandon","ability","able","about","above","absent","absorb","abstract","absurd","abuse",
+"access","accident","account","accuse","achieve","acid","acoustic","acquire","across","act",
+"action","actor","actress","actual","adapt","add","addict","address","adjust","admit",
+"adult","advance","advice","aerobic","affair","afford","afraid","again","age","agent",
+"agree","ahead","aim","air","airport","aisle","alarm","album","alcohol","alert",
+"alien","all","alley","allow","almost","alone","alpha","already","also","alter",
+"always","amateur","amazing","among","amount","amused","analyst","anchor","ancient","anger",
+"angle","angry","animal","ankle","announce","annual","another","answer","antenna","antique",
+"anxiety","any","apart","apology","appear","apple","approve","april","arch","arctic",
+"area","arena","argue","arm","armed","armor","army","around","arrange","arrest",
+"arrive","arrow","art","artefact","artist","artwork","ask","aspect","assault","asset",
+"assist","assume","asthma","athlete","atom","attack","attend","attitude","attract","auction",
+"audit","august","aunt","author","auto","autumn","average","avocado","avoid","awake",
+"aware","away","awesome","awful","awkward","axis","baby","bachelor","bacon","badge",
+"bag","balance","balcony","ball","bamboo","banana","banner","bar","barely","bargain",
+"barrel","base","basic","basket","battle","beach","bean","beauty","because","become",
+"beef","before","begin","behave","behind","believe","below","belt","bench","benefit",
+"best","betray","better","between","beyond","bicycle","bid","bike","bind","biology",
+"bird","birth","bitter","black","blade","blame","blanket","blast","bleak","bless",
+"blind","blood","blossom","blouse","blue","blur","blush","board","boat","body",
+"boil","bomb","bone","bonus","book","boost","border","boring","borrow","boss",
+"bottom","bounce","box","boy","bracket","brain","brand","brass","brave","bread",
+"breeze","brick","bridge","brief","bright","bring","brisk","broccoli","broken","bronze",
+"broom","brother","brown","brush","bubble","buddy","budget","buffalo","build","bulb",
+"bulk","bullet","bundle","bunker","burden","burger","burst","bus","business","busy",
+"butter","buyer","buzz","cabbage","cabin","cable","cactus","cage","cake","call",
+"calm","camera","camp","can","canal","cancel","candy","cannon","canoe","canvas",
+"canyon","capable","capital","captain","car","carbon","card","cargo","carpet","carry",
+"cart","case","cash","casino","castle","casual","cat","catalog","catch","category",
+"cattle","caught","cause","caution","cave","ceiling","celery","cement","census","century",
+"cereal","certain","chair","chalk","champion","change","chaos","chapter","charge","chase",
+"chat","cheap","check","cheese","chef","cherry","chest","chicken","chief","child",
+"chimney","choice","choose","chronic","chuckle","chunk","churn","cigar","cinnamon","circle",
+"citizen","city","civil","claim","clap","clarify","claw","clay","clean","clerk",
+"clever","click","client","cliff","climb","clinic","clip","clock","clog","close",
+"cloth","cloud","clown","club","clump","cluster","clutch","coach","coast","coconut",
+"code","coffee","coil","coin","collect","color","column","combine","come","comfort",
+"comic","common","company","concert","conduct","confirm","congress","connect","consider","control",
+"convince","cook","cool","copper","copy","coral","core","corn","correct","cost",
+"cotton","couch","country","couple","course","cousin","cover","coyote","crack","cradle",
+"craft","cram","crane","crash","crater","crawl","crazy","cream","credit","creek",
+"crew","cricket","crime","crisp","critic","crop","cross","crouch","crowd","crucial",
+"cruel","cruise","crumble","crunch","crush","cry","crystal","cube","culture","cup",
+"cupboard","curious","current","curtain","curve","cushion","custom","cute","cycle","dad",
+"damage","damp","dance","danger","daring","dash","daughter","dawn","day","deal",
+"debate","debris","decade","december","decide","decline","decorate","decrease","deer","defense",
+"define","defy","degree","delay","deliver","demand","demise","denial","dentist","deny",
+"depart","depend","deposit","depth","deputy","derive","describe","desert","design","desk",
+"despair","destroy","detail","detect","develop","device","devote","diagram","dial","diamond",
+"diary","dice","diesel","diet","differ","digital","dignity","dilemma","dinner","dinosaur",
+"direct","dirt","disagree","discover","disease","dish","dismiss","disorder","display","distance",
+"divert","divide","divorce","dizzy","doctor","document","dog","doll","dolphin","domain",
+"donate","donkey","donor","door","dose","double","dove","draft","dragon","drama",
+"drastic","draw","dream","dress","drift","drill","drink","drip","drive","drop",
+"drum","dry","duck","dumb","dune","during","dust","dutch","duty","dwarf",
+"dynamic","eager","eagle","early","earn","earth","easily","east","easy","echo",
+"ecology","economy","edge","edit","educate","effort","egg","eight","either","elbow",
+"elder","electric","elegant","element","elephant","elevator","elite","else","embark","embody",
+"embrace","emerge","emotion","employ","empower","empty","enable","enact","end","endless",
+"endorse","enemy","energy","enforce","engage","engine","enhance","enjoy","enlist","enough",
+"enrich","enroll","ensure","enter","entire","entry","envelope","episode","equal","equip",
+"era","erase","erode","erosion","error","erupt","escape","essay","essence","estate",
+"eternal","ethics","evidence","evil","evoke","evolve","exact","example","excess","exchange",
+"excite","exclude","excuse","execute","exercise","exhaust","exhibit","exile","exist","exit",
+"exotic","expand","expect","expire","explain","expose","express","extend","extra","eye",
+"eyebrow","fabric","face","faculty","fade","faint","faith","fall","false","fame",
+"family","famous","fan","fancy","fantasy","farm","fashion","fat","fatal","father",
+"fatigue","fault","favorite","feature","february","federal","fee","feed","feel","female",
+"fence","festival","fetch","fever","few","fiber","fiction","field","figure","file",
+"film","filter","final","find","fine","finger","finish","fire","firm","first",
+"fiscal","fish","fit","fitness","fix","flag","flame","flash","flat","flavor",
+"flee","flight","flip","float","flock","floor","flower","fluid","flush","fly",
+"foam","focus","fog","foil","fold","follow","food","foot","force","forest",
+"forget","fork","fortune","forum","forward","fossil","foster","found","fox","fragile",
+"frame","frequent","fresh","friend","fringe","frog","front","frost","frown","frozen",
+"fruit","fuel","fun","funny","furnace","fury","future","gadget","gain","galaxy",
+"gallery","game","gap","garage","garbage","garden","garlic","garment","gas","gasp",
+"gate","gather","gauge","gaze","general","genius","genre","gentle","genuine","gesture",
+"ghost","giant","gift","giggle","ginger","giraffe","girl","give","glad","glance",
+"glare","glass","glide","glimpse","globe","gloom","glory","glove","glow","glue",
+"goat","goddess","gold","good","goose","gorilla","gospel","gossip","govern","gown",
+"grab","grace","grain","grant","grape","grass","gravity","great","green","grid",
+"grief","grit","grocery","group","grow","grunt","guard","guess","guide","guilt",
+"guitar","gun","gym","habit","hair","half","hammer","hamster","hand","happy",
+"harbor","hard","harsh","harvest","hat","have","hawk","hazard","head","health",
+"heart","heavy","hedgehog","height","hello","helmet","help","hen","hero","hidden",
+"high","hill","hint","hip","hire","history","hobby","hockey","hold","hole",
+"holiday","hollow","home","honey","hood","hope","horn","horror","horse","hospital",
+"host","hotel","hour","hover","hub","huge","human","humble","humor","hundred",
+"hungry","hunt","hurdle","hurry","hurt","husband","hybrid","ice","icon","idea",
+"identify","idle","ignore","ill","illegal","illness","image","imitate","immense","immune",
+"impact","impose","improve","impulse","inch","include","income","increase","index","indicate",
+"indoor","industry","infant","inflict","inform","inhale","inherit","initial","inject","injury",
+"inmate","inner","innocent","input","inquiry","insane","insect","inside","inspire","install",
+"intact","interest","into","invest","invite","involve","iron","island","isolate","issue",
+"item","ivory","jacket","jaguar","jar","jazz","jealous","jeans","jelly","jewel",
+"job","join","joke","journey","joy","judge","juice","jump","jungle","junior",
+"junk","just","kangaroo","keen","keep","ketchup","key","kick","kid","kidney",
+"kind","kingdom","kiss","kit","kitchen","kite","kitten","kiwi","knee","knife",
+"knock","know","lab","label","labor","ladder","lady","lake","lamp","language",
+"laptop","large","later","latin","laugh","laundry","lava","law","lawn","lawsuit",
+"layer","lazy","leader","leaf","learn","leave","lecture","left","leg","legal",
+"legend","leisure","lemon","lend","length","lens","leopard","lesson","letter","level",
+"liar","liberty","library","license","life","lift","light","like","limb","limit",
+"link","lion","liquid","list","little","live","lizard","load","loan","lobster",
+"local","lock","logic","lonely","long","loop","lottery","loud","lounge","love",
+"loyal","lucky","luggage","lumber","lunar","lunch","luxury","lyrics","machine","mad",
+"magic","magnet","maid","mail","main","major","make","mammal","man","manage",
+"mandate","mango","mansion","manual","maple","marble","march","margin","marine","market",
+"marriage","mask","mass","master","match","material","math","matrix","matter","maximum",
+"maze","meadow","mean","measure","meat","mechanic","medal","media","melody","melt",
+"member","memory","mention","menu","mercy","merge","merit","merry","mesh","message",
+"metal","method","middle","midnight","milk","million","mimic","mind","minimum","minor",
+"minute","miracle","mirror","misery","miss","mistake","mix","mixed","mixture","mobile",
+"model","modify","mom","moment","monitor","monkey","monster","month","moon","moral",
+"more","morning","mosquito","mother","motion","motor","mountain","mouse","move","movie",
+"much","muffin","mule","multiply","muscle","museum","mushroom","music","must","mutual",
+"myself","mystery","myth","naive","name","napkin","narrow","nasty","nation","nature",
+"near","neck","need","negative","neglect","neither","nephew","nerve","nest","net",
+"network","neutral","never","news","next","nice","night","noble","noise","nominee",
+"noodle","normal","north","nose","notable","note","nothing","notice","novel","now",
+"nuclear","number","nurse","nut","oak","obey","object","oblige","obscure","observe",
+"obtain","obvious","occur","ocean","october","odor","off","offer","office","often",
+"oil","okay","old","olive","olympic","omit","once","one","onion","online",
+"only","open","opera","opinion","oppose","option","orange","orbit","orchard","order",
+"ordinary","organ","orient","original","orphan","ostrich","other","outdoor","outer","output",
+"outside","oval","oven","over","own","owner","oxygen","oyster","ozone","pact",
+"paddle","page","pair","palace","palm","panda","panel","panic","panther","paper",
+"parade","parent","park","parrot","party","pass","patch","path","patient","patrol",
+"pattern","pause","pave","payment","peace","peanut","pear","peasant","pelican","pen",
+"penalty","pencil","people","pepper","perfect","permit","person","pet","phone","photo",
+"phrase","physical","piano","picnic","picture","piece","pig","pigeon","pill","pilot",
+"pink","pioneer","pipe","pistol","pitch","pizza","place","planet","plastic","plate",
+"play","please","pledge","pluck","plug","plunge","poem","poet","point","polar",
+"pole","police","pond","pony","pool","popular","portion","position","possible","post",
+"potato","pottery","poverty","powder","power","practice","praise","predict","prefer","prepare",
+"present","pretty","prevent","price","pride","primary","print","priority","prison","private",
+"prize","problem","process","produce","profit","program","project","promote","proof","property",
+"prosper","protect","proud","provide","public","pudding","pull","pulp","pulse","pumpkin",
+"punch","pupil","puppy","purchase","purity","purpose","purse","push","put","puzzle",
+"pyramid","quality","quantum","quarter","question","quick","quit","quiz","quote","rabbit",
+"raccoon","race","rack","radar","radio","rail","rain","raise","rally","ramp",
+"ranch","random","range","rapid","rare","rate","rather","raven","raw","razor",
+"ready","real","reason","rebel","rebuild","recall","receive","recipe","record","recycle",
+"reduce","reflect","reform","refuse","region","regret","regular","reject","relax","release",
+"relief","rely","remain","remember","remind","remove","render","renew","rent","reopen",
+"repair","repeat","replace","report","require","rescue","resemble","resist","resource","response",
+"result","retire","retreat","return","reunion","reveal","review","reward","rhythm","rib",
+"ribbon","rice","rich","ride","ridge","rifle","right","rigid","ring","riot",
+"ripple","risk","ritual","rival","river","road","roast","robot","robust","rocket",
+"romance","roof","rookie","room","rose","rotate","rough","round","route","royal",
+"rubber","rude","rug","rule","run","runway","rural","sad","saddle","sadness",
+"safe","sail","salad","salmon","salon","salt","salute","same","sample","sand",
+"satisfy","satoshi","sauce","sausage","save","say","scale","scan","scare","scatter",
+"scene","scheme","school","science","scissors","scorpion","scout","scrap","screen","script",
+"scrub","sea","search","season","seat","second","secret","section","security","seed",
+"seek","segment","select","sell","seminar","senior","sense","sentence","series","service",
+"session","settle","setup","seven","shadow","shaft","shallow","share","shed","shell",
+"sheriff","shield","shift","shine","ship","shiver","shock","shoe","shoot","shop",
+"short","shoulder","shove","shrimp","shrug","shuffle","shy","sibling","sick","side",
+"siege","sight","sign","silent","silk","silly","silver","similar","simple","since",
+"sing","siren","sister","situate","six","size","skate","sketch","ski","skill",
+"skin","skirt","skull","slab","slam","sleep","slender","slice","slide","slight",
+"slim","slogan","slot","slow","slush","small","smart","smile","smoke","smooth",
+"snack","snake","snap","sniff","snow","soap","soccer","social","sock","soda",
+"soft","solar","soldier","solid","solution","solve","someone","song","soon","sorry",
+"sort","soul","sound","soup","source","south","space","spare","spatial","spawn",
+"speak","special","speed","spell","spend","sphere","spice","spider","spike","spin",
+"spirit","split","spoil","sponsor","spoon","sport","spot","spray","spread","spring",
+"spy","square","squeeze","squirrel","stable","stadium","staff","stage","stairs","stamp",
+"stand","start","state","stay","steak","steel","stem","step","stereo","stick",
+"still","sting","stock","stomach","stone","stool","story","stove","strategy","street",
+"strike","strong","struggle","student","stuff","stumble","style","subject","submit","subway",
+"success","such","sudden","suffer","sugar","suggest","suit","summer","sun","sunny",
+"sunset","super","supply","supreme","sure","surface","surge","surprise","surround","survey",
+"suspect","sustain","swallow","swamp","swap","swarm","swear","sweet","swift","swim",
+"swing","switch","sword","symbol","symptom","syrup","system","table","tackle","tag",
+"tail","talent","talk","tank","tape","target","task","taste","tattoo","taxi",
+"teach","team","tell","ten","tenant","tennis","tent","term","test","text",
+"thank","that","theme","then","theory","there","they","thing","this","thought",
+"three","thrive","throw","thumb","thunder","ticket","tide","tiger","tilt","timber",
+"time","tiny","tip","tired","tissue","title","toast","tobacco","today","toddler",
+"toe","together","toilet","token","tomato","tomorrow","tone","tongue","tonight","tool",
+"tooth","top","topic","topple","torch","tornado","tortoise","toss","total","tourist",
+"toward","tower","town","toy","track","trade","traffic","tragic","train","transfer",
+"trap","trash","travel","tray","treat","tree","trend","trial","tribe","trick",
+"trigger","trim","trip","trophy","trouble","truck","true","truly","trumpet","trust",
+"truth","try","tube","tuition","tumble","tuna","tunnel","turkey","turn","turtle",
+"twelve","twenty","twice","twin","twist","two","type","typical","ugly","umbrella",
+"unable","unaware","uncle","uncover","under","undo","unfair","unfold","unhappy","uniform",
+"unique","unit","universe","unknown","unlock","until","unusual","unveil","update","upgrade",
+"uphold","upon","upper","upset","urban","urge","usage","use","used","useful",
+"useless","usual","utility","vacant","vacuum","vague","valid","valley","valve","van",
+"vanish","vapor","various","vast","vault","vehicle","velvet","vendor","venture","venue",
+"verb","verify","version","very","vessel","veteran","viable","vibrant","vicious","victory",
+"video","view","village","vintage","violin","virtual","virus","visa","visit","visual",
+"vital","vivid","vocal","voice","void","volcano","volume","vote","voyage","wage",
+"wagon","wait","walk","wall","walnut","want","warfare","warm","warrior","wash",
+"wasp","waste","water","wave","way","wealth","weapon","wear","weasel","weather",
+"web","wedding","weekend","weird","welcome","west","wet","whale","what","wheat",
+"wheel","when","where","whip","whisper","wide","width","wife","wild","will",
+"win","window","wine","wing","wink","winner","winter","wire","wisdom","wise",
+"wish","witness","wolf","woman","wonder","wood","wool","word","work","world",
+"worry","worth","wrap","wreck","wrestle","wrist","write","wrong","yard","year",
+"yellow","you","young","youth","zebra","zero","zone","zoo"];
+
+	    const TRANSLATIONS = {
+            en: {
+                pageTitle: "Offline BIP-39 Seed Calculator Using Dice",
+                clear: "Clear data", heading: "BIP-39 Seed Generator Using Dice",
+                securityWarning: "⚠ For real use, run this generator offline.",
+                instructions: "Roll a die: 1 = 00, 2 = 01, 3 = 10 and 4 = 11. Discard results 5 and 6.",
+                diceResults: "Dice results:", paste: "Paste", calculate: "Calculate Seed",
+                generatedBitsLabel: "Generated bits:", hexLabel: "Hexadecimal:", shaLabel: "SHA-256:",
+                remainingLabel: "Remaining entropy bits:", checksumLabel: "Checksum bits (SHA-256):",
+                lastWordLabel: "Last word:", copy: "Copy", copied: "Copied!", pasted: "Pasted!",
+                usePaste: "Use Ctrl+V", words: "words", firstWords: "First {count} words:",
+                copyWords: "Copy {count} words", rollsRemaining: "{count} die rolls remaining",
+                dicePlaceholder: "Enter {count} results (1, 2, 3 or 4)",
+                bitsPlaceholder: "The {count} generated bits will appear here",
+                hexPlaceholder: "The hexadecimal value will appear here", hashPlaceholder: "The SHA-256 hash will appear here",
+                wordsPlaceholder: "The BIP-39 words will appear here", remainingPlaceholder: "The remaining bits will appear here",
+                checksumPlaceholder: "The binary checksum will appear here", lastWordPlaceholder: "The last BIP-39 word will appear here",
+                invalidDice: "Enter only die results from 1 to 4.",
+                invalidCount: "For {words} words, enter exactly {rolls} valid rolls. You entered {actual}.",
+                hashError: "An error occurred while calculating the hash."
+            },
+            es: {
+                pageTitle: "Calculadora de Seed BIP-39 con Dados sin Conexión",
+                clear: "Borrar datos", heading: "Generador de Seed BIP-39 con Dados",
+                securityWarning: "⚠ Para un uso real, ejecuta este generador sin conexión.",
+                instructions: "Lanza un dado: 1 = 00, 2 = 01, 3 = 10 y 4 = 11. Descarta los resultados 5 y 6.",
+                diceResults: "Resultados del dado:", paste: "Pegar", calculate: "Calcular Seed",
+                generatedBitsLabel: "Bits generados:", hexLabel: "Hexadecimal:", shaLabel: "SHA-256:",
+                remainingLabel: "Bits de entropía restantes:", checksumLabel: "Bits del checksum (SHA-256):",
+                lastWordLabel: "Última palabra:", copy: "Copiar", copied: "¡Copiado!", pasted: "¡Pegado!",
+                usePaste: "Usa Ctrl+V", words: "palabras", firstWords: "Primeras {count} palabras:",
+                copyWords: "Copiar {count} palabras", rollsRemaining: "Faltan {count} lanzamientos del dado",
+                dicePlaceholder: "Introduce {count} resultados (1, 2, 3 o 4)",
+                bitsPlaceholder: "Los {count} bits generados aparecerán aquí",
+                hexPlaceholder: "El hexadecimal aparecerá aquí", hashPlaceholder: "El SHA-256 aparecerá aquí",
+                wordsPlaceholder: "Las palabras BIP-39 aparecerán aquí", remainingPlaceholder: "Los bits restantes aparecerán aquí",
+                checksumPlaceholder: "El checksum binario aparecerá aquí", lastWordPlaceholder: "La última palabra BIP-39 aparecerá aquí",
+                invalidDice: "Introduce solamente resultados del dado del 1 al 4.",
+                invalidCount: "Para {words} palabras, introduce exactamente {rolls} lanzamientos válidos. Has introducido {actual}.",
+                hashError: "Ocurrió un error al calcular el hash."
+            },
+            pt: {
+                pageTitle: "Calculadora de Seed BIP-39 com Dados Offline",
+                clear: "Limpar dados", heading: "Gerador de Seed BIP-39 por Dados",
+                securityWarning: "⚠ Para uso real, execute este gerador offline.",
+                instructions: "Jogue um dado: 1 = 00, 2 = 01, 3 = 10 e 4 = 11. Resultados 5 e 6 devem ser descartados.",
+                diceResults: "Resultados do dado:", paste: "Colar", calculate: "Calcular Seed",
+                generatedBitsLabel: "Bits gerados:", hexLabel: "Hexadecimal:", shaLabel: "SHA-256:",
+                remainingLabel: "Bits de entropia restantes:", checksumLabel: "Bits do checksum (SHA-256):",
+                lastWordLabel: "Última palavra:", copy: "Copiar", copied: "Copiado!", pasted: "Colado!",
+                usePaste: "Use Ctrl+V", words: "palavras", firstWords: "Primeiras {count} palavras:",
+                copyWords: "Copiar {count} palavras", rollsRemaining: "Faltam {count} lançamentos do dado",
+                dicePlaceholder: "Insira {count} resultados (1, 2, 3 ou 4)",
+                bitsPlaceholder: "Os {count} bits gerados aparecerão aqui",
+                hexPlaceholder: "O hexadecimal aparecerá aqui", hashPlaceholder: "O SHA-256 aparecerá aqui",
+                wordsPlaceholder: "As palavras BIP-39 aparecerão aqui", remainingPlaceholder: "Os bits restantes aparecerão aqui",
+                checksumPlaceholder: "O checksum em binário aparecerá aqui", lastWordPlaceholder: "A última palavra BIP-39 aparecerá aqui",
+                invalidDice: "Digite somente resultados do dado de 1 a 4.",
+                invalidCount: "Para {words} palavras, informe exatamente {rolls} lançamentos válidos. Você informou {actual}.",
+                hashError: "Ocorreu um erro ao calcular o hash."
+            }
+        };
+
+	    let wordCount = 12;
+        let currentLanguage = "en";
+
+        function translate(key, values = {}) {
+            return Object.entries(values).reduce(
+                (text, [name, value]) => text.replaceAll("{" + name + "}", value),
+                TRANSLATIONS[currentLanguage][key]
+            );
+        }
+
+        function refreshLanguage() {
+            document.documentElement.lang = currentLanguage;
+            document.title = translate("pageTitle");
+            document.querySelectorAll("[data-i18n]").forEach(element => {
+                element.textContent = translate(element.dataset.i18n);
+            });
+
+            const rolls = wordCount === 12 ? 64 : 128;
+            const entropyBits = wordCount === 12 ? 128 : 256;
+            document.getElementById("wordConfig").textContent = wordCount + " " + translate("words");
+            document.getElementById("wordsCopyButton").textContent = translate("copyWords", { count: wordCount });
+            document.getElementById("wordsLabel").textContent = translate("firstWords", { count: wordCount - 1 });
+            document.getElementById("binaryInput").placeholder = translate("dicePlaceholder", { count: rolls });
+            document.getElementById("generatedBits").placeholder = translate("bitsPlaceholder", { count: entropyBits });
+            document.getElementById("hexResult").placeholder = translate("hexPlaceholder");
+            document.getElementById("hashResult").placeholder = translate("hashPlaceholder");
+            document.getElementById("wordsResult").placeholder = translate("wordsPlaceholder");
+            document.getElementById("remainingBits").placeholder = translate("remainingPlaceholder");
+            document.getElementById("checksumResult").placeholder = translate("checksumPlaceholder");
+            document.getElementById("checksumWord").placeholder = translate("lastWordPlaceholder");
+            updateBitCounter();
+        }
+
+        function setLanguage(language) {
+            currentLanguage = TRANSLATIONS[language] ? language : "en";
+            document.getElementById("languageSelect").value = currentLanguage;
+            refreshLanguage();
+        }
+
+	    function toggleWordConfig() {
+	        wordCount = wordCount === 12 ? 24 : 12;
+	        ["generatedBits", "hexResult", "hashResult", "wordsResult", "remainingBits", "checksumResult", "checksumWord"].forEach(id => {
+	            document.getElementById(id).value = "";
+	        });
+	        refreshLanguage();
+	        sanitizeBinaryInput(document.getElementById("binaryInput"));
+	    }
+
+	    function clearPageData() {
+	        ["binaryInput", "generatedBits", "hexResult", "hashResult", "wordsResult", "remainingBits", "checksumResult", "checksumWord"].forEach(id => {
+	            document.getElementById(id).value = "";
+	        });
+	        updateBitCounter();
+	        document.getElementById("binaryInput").focus();
+	    }
+
+	// Converte o binário em hexadecimal.
+        function binToHex(binary) {
+            let hex = "";
+            for (let i = 0; i < binary.length; i += 4) {
+                let chunk = binary.substr(i, 4);
+                hex += parseInt(chunk, 2).toString(16);
+            }
+            return hex.toUpperCase();
+        }
+		
+	//crypto.subtle.digest é um método disponível em ambientes JavaScript de navegadores modernos e faz parte do Web Crypto API.
+	//É uma maneira de calcular funções de hash criptográficas usando uma variedade de algoritmos, incluindo o bitcoinheiro SHA-256
+
+        function hexStringToArrayBuffer(hexString) {
+            const bytes = new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+            return bytes.buffer;
+        }
+
+        function sanitizeBinaryInput(field) {
+            const expectedRolls = wordCount === 12 ? 64 : 128;
+            field.value = field.value
+                .replace(/\s/g, "")
+                .replace(/[^1-4]/g, "")
+                .slice(0, expectedRolls);
+            updateBitCounter();
+        }
+
+        function updateBitCounter() {
+            const currentRolls = document.getElementById("binaryInput").value.length;
+            const expectedRolls = wordCount === 12 ? 64 : 128;
+            const counter = document.getElementById("bitCounter");
+
+            counter.textContent = translate("rollsRemaining", { count: expectedRolls - currentRolls });
+        }
+
+        function diceToBinary(rolls) {
+            const bitPairs = { "1": "00", "2": "01", "3": "10", "4": "11" };
+            return rolls.split("").map(roll => bitPairs[roll]).join("");
+        }
+
+        function convertBinaryToWords(binary) {
+            const words = [];
+            const completeBits = binary.length - (binary.length % 11);
+
+            for (let i = 0; i < completeBits; i += 11) {
+                const wordIndex = parseInt(binary.slice(i, i + 11), 2);
+                words.push(BIP39_ENGLISH_WORDS[wordIndex]);
+            }
+
+            return {
+                words: words.join(" "),
+                remainingBits: binary.slice(completeBits)
+            };
+        }
+
+        async function copyField(fieldId, button) {
+            const field = document.getElementById(fieldId);
+
+            if (!field.value) {
+                return;
+            }
+
+            try {
+                await navigator.clipboard.writeText(field.value);
+            } catch (error) {
+                field.select();
+                document.execCommand("copy");
+            }
+
+            const originalText = button.textContent;
+            button.textContent = translate("copied");
+            setTimeout(() => button.textContent = originalText, 1200);
+        }
+
+        async function copyCompleteWords(button) {
+            const words = document.getElementById("wordsResult").value.trim();
+            const checksumWord = document.getElementById("checksumWord").value.trim();
+
+            if (!words || !checksumWord) {
+                return;
+            }
+
+            const completeMnemonic = words + " " + checksumWord;
+
+            try {
+                await navigator.clipboard.writeText(completeMnemonic);
+            } catch (error) {
+                const temporaryField = document.createElement("textarea");
+                temporaryField.value = completeMnemonic;
+                temporaryField.style.position = "fixed";
+                temporaryField.style.opacity = "0";
+                document.body.appendChild(temporaryField);
+                temporaryField.select();
+                document.execCommand("copy");
+                temporaryField.remove();
+            }
+
+            button.textContent = translate("copied");
+            setTimeout(() => button.textContent = translate("copyWords", { count: wordCount }), 1200);
+        }
+
+        async function pasteBinary(button) {
+            const field = document.getElementById("binaryInput");
+
+            try {
+                field.value = await navigator.clipboard.readText();
+                sanitizeBinaryInput(field);
+                button.textContent = translate("pasted");
+                setTimeout(() => button.textContent = translate("paste"), 1200);
+            } catch (error) {
+                field.focus();
+                button.textContent = translate("usePaste");
+                setTimeout(() => button.textContent = translate("paste"), 2000);
+            }
+        }
+
+        async function calculateFromBinary() {
+            const diceInput = document.getElementById("binaryInput").value.replace(/\s/g, "");
+            const bitsOutput = document.getElementById("generatedBits");
+            const hexOutput = document.getElementById("hexResult");
+            const hashOutput = document.getElementById("hashResult");
+            const wordsOutput = document.getElementById("wordsResult");
+            const remainingBitsOutput = document.getElementById("remainingBits");
+            const checksumOutput = document.getElementById("checksumResult");
+            const checksumWordOutput = document.getElementById("checksumWord");
+
+            bitsOutput.value = "";
+            hexOutput.value = "";
+            hashOutput.value = "";
+            wordsOutput.value = "";
+            remainingBitsOutput.value = "";
+            checksumOutput.value = "";
+            checksumWordOutput.value = "";
+
+            if (!diceInput || !/^[1-4]+$/.test(diceInput)) {
+                hashOutput.value = translate("invalidDice");
+                return;
+            }
+
+            const expectedRolls = wordCount === 12 ? 64 : 128;
+            if (diceInput.length !== expectedRolls) {
+                hashOutput.value = translate("invalidCount", {
+                    words: wordCount,
+                    rolls: expectedRolls,
+                    actual: diceInput.length
+                });
+                return;
+            }
+
+            try {
+                const binaryInput = diceToBinary(diceInput);
+                bitsOutput.value = binaryInput;
+                const hexValue = binToHex(binaryInput);
+                hexOutput.value = hexValue;
+                const data = hexStringToArrayBuffer(hexValue);
+                const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const hashHex = hashArray.map(byte => ('0' + byte.toString(16)).slice(-2)).join('');
+                hashOutput.value = hashHex;
+                const wordResult = convertBinaryToWords(binaryInput);
+                wordsOutput.value = wordResult.words;
+                remainingBitsOutput.value = wordResult.remainingBits + " (" + wordResult.remainingBits.length + " bits)";
+                const checksumHexLength = wordCount === 12 ? 1 : 2;
+                const checksumBinary = hashHex.slice(0, checksumHexLength)
+                    .split("")
+                    .map(digit => parseInt(digit, 16).toString(2).padStart(4, "0"))
+                    .join("");
+                checksumOutput.value = checksumBinary;
+
+                const finalWordBits = wordResult.remainingBits + checksumBinary;
+                checksumWordOutput.value = BIP39_ENGLISH_WORDS[parseInt(finalWordBits, 2)];
+            } catch (error) {
+                console.error(error);
+                hashOutput.value = translate("hashError");
+            }
+        }
+
+        setLanguage("en");
+    </script>
+</body>
+</html>
